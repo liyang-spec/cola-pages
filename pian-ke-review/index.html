@@ -365,6 +365,12 @@ body {
   color: var(--text-secondary);
 }
 .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-danger {
+  background: transparent;
+  border: 1.5px solid rgba(190, 86, 86, 0.28);
+  color: #b65c5c;
+}
+.btn-danger:hover { border-color: #b65c5c; background: rgba(190, 86, 86, 0.06); }
 .btn-sm { padding: 7px 14px; font-size: 0.8rem; }
 
 @media (max-width: 700px) {
@@ -720,6 +726,18 @@ async function getBlob(id) {
   });
 }
 
+async function deleteEntry(entry) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction([STORE_META, STORE_BLOBS], 'readwrite');
+    tx.objectStore(STORE_META).delete(entry.id);
+    if (entry.videoBlobId) tx.objectStore(STORE_BLOBS).delete(entry.videoBlobId);
+    if (entry.reviewBlobId) tx.objectStore(STORE_BLOBS).delete(entry.reviewBlobId);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
 // ===== State =====
 let entries = [];
 let currentFilter = 'incomplete';
@@ -945,6 +963,7 @@ async function render() {
               ? `<button class="btn btn-outline btn-sm btn-undo" data-id="${entry.id}">撤销完成</button>`
               : `<button class="btn btn-success btn-sm btn-done" data-id="${entry.id}">✓ 标记完成</button>`
             }
+            <button class="btn btn-danger btn-sm btn-delete" data-id="${entry.id}">删除作品</button>
           </div>
         </div>
       </div>
@@ -988,6 +1007,25 @@ function bindCardEvents() {
         if (blobURLCache[blobId]) { URL.revokeObjectURL(blobURLCache[blobId]); delete blobURLCache[blobId]; }
       }
       await saveEntry(entry);
+      await render();
+    });
+  });
+
+  document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const id = this.dataset.id;
+      const entry = entries.find(e => e.id === id);
+      if (!entry) return;
+      if (!confirm(`确定删除作品“${entry.title}”吗？删除后无法恢复。`)) return;
+
+      await deleteEntry(entry);
+      [entry.videoBlobId, entry.reviewBlobId].forEach(blobId => {
+        if (blobId && blobURLCache[blobId]) {
+          URL.revokeObjectURL(blobURLCache[blobId]);
+          delete blobURLCache[blobId];
+        }
+      });
+      entries = entries.filter(item => item.id !== id);
       await render();
     });
   });
