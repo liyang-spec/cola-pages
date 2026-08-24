@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>片刻点评 — SHORT VIDEO REVIEW</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f3f0;
+  --card-bg: #ffffff;
+  --text: #2d2d3a;
+  --text-secondary: #6b6b7b;
+  --text-muted: #9e9eae;
+  --accent: #7c6fa0;
+  --accent-light: #a594c8;
+  --accent-bg: rgba(124,111,160,0.08);
+  --success: #5ba67a;
+  --success-bg: rgba(91,166,122,0.1);
+  --border: rgba(0,0,0,0.06);
+  --border-strong: rgba(0,0,0,0.1);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header */
+.site-header {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: calc(100% - 48px);
+  max-width: 900px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  padding: 28px 0;
+  background: transparent;
+}
+.site-header .logo {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 14px;
+}
+.site-header .brand {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Hero */
+.hero {
+  position: relative;
+  min-height: 340px;
+  overflow: hidden;
+  background: #f7f4f0;
+  text-align: left;
+  padding: 112px 24px 54px;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  top: -82px;
+  right: 18%;
+  border-radius: 50%;
+  background: #e9e3f2;
+  box-shadow: 0 0 50px rgba(150,135,180,0.08);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 62px;
+  height: 62px;
+  top: 108px;
+  right: 5%;
+  border: 1.5px solid #b8a9df;
+  border-radius: 50%;
+}
+.hero-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.hero .subtitle {
+  font-size: 0.72rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #654bc5;
+  opacity: 1;
+  margin-bottom: 16px;
+}
+.hero .tagline {
+  font-size: clamp(1.75rem, 3vw, 3.25rem);
+  font-weight: 300;
+  color: #24212a;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+.hero .tagline strong {
+  font-weight: 700;
+}
+
+/* Stats Panel */
+.stats-panel {
+  display: flex;
+  width: 400px;
+  max-width: calc(100% - 48px);
+  margin: 0;
+  background: rgba(255,255,255,0.88);
+  border-radius: 0;
+  box-shadow: 0 18px 40px rgba(65,55,80,0.12);
+  overflow: hidden;
+  position: absolute;
+  z-index: 5;
+  right: 7%;
+  bottom: 34px;
+}
+.stat-item {
+  flex: 1;
+  text-align: center;
+  padding: 30px 20px;
+  position: relative;
+}
+.stat-item + .stat-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 25%;
+  height: 50%;
+  width: 1px;
+  background: var(--border-strong);
+}
+.stat-number {
+  font-size: 2.6rem;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.stat-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* Main Container */
+.container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+/* Section Header */
+.section-header {
+  margin-top: 50px;
+  margin-bottom: 6px;
+}
+.section-header .section-tag {
+  font-size: 0.68rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.section-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.section-header .section-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 24px;
+  padding: 14px 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+.toolbar-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.toolbar-group { display: flex; align-items: center; gap: 8px; }
+.toolbar-group select {
+  border: 1.5px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  background: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition);
+}
+.toolbar-group select:focus { border-color: var(--accent); }
+
+/* Upload Toggle */
+.upload-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 3px 12px rgba(124,111,160,0.3);
+  letter-spacing: 0.3px;
+}
+.upload-toggle:hover { background: #6b5f92; box-shadow: 0 5px 20px rgba(124,111,160,0.4); transform: translateY(-1px); }
+.hero-upload {
+  position: absolute;
+  right: 7%;
+  bottom: 190px;
+  z-index: 6;
+  min-width: 230px;
+  padding: 14px 30px;
+  white-space: nowrap;
+}
+
+/* Upload Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(36, 33, 42, 0.42);
+  backdrop-filter: blur(5px);
+}
+.modal-overlay.open { display: flex; }
+.upload-form {
+  display: block;
+  width: min(680px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: 0 24px 70px rgba(35, 28, 50, 0.24);
+  animation: modalIn 0.25s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.modal-header h3 { font-size: 1.2rem; }
+.modal-close {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: #f1efed;
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+.modal-close:hover { background: #e7e3df; color: var(--text); }
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.form-group input, .form-group textarea, .form-group select {
+  border: 1.5px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: all var(--transition);
+  background: #fafaf8;
+  font-family: inherit;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+.form-group textarea { resize: vertical; min-height: 72px; }
+.form-group input[type="file"] { padding: 10px; cursor: pointer; }
+.form-group input[type="file"]::file-selector-button {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: none;
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 8px;
+}
+.submit-row { margin-top: 20px; display: flex; justify-content: flex-end; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #6b5f92; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { background: #4d9069; }
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--border-strong);
+  color: var(--text-secondary);
+}
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm { padding: 7px 14px; font-size: 0.8rem; }
+
+@media (max-width: 700px) {
+  .site-header { width: calc(100% - 48px); padding: 18px 0; }
+  .site-header .logo { width: 38px; height: 38px; }
+  .site-header .brand { font-size: 1.05rem; }
+  .hero { min-height: 410px; padding: 105px 24px 160px; }
+  .hero::before { width: 240px; height: 240px; top: 50px; right: -80px; }
+  .hero::after { width: 42px; height: 42px; top: 96px; right: 8%; }
+  .hero .subtitle { font-size: 0.62rem; letter-spacing: 3px; }
+  .hero .tagline { font-size: 1.65rem; }
+  .stats-panel { right: 24px; bottom: 24px; width: 300px; max-width: calc(100% - 48px); }
+  .hero-upload { right: 24px; bottom: 126px; min-width: 190px; padding: 10px 18px; font-size: 0.82rem; }
+  .stat-item { padding: 14px 10px; }
+  .stat-number { font-size: 1.8rem; }
+}
+
+/* Cards */
+.cards { display: flex; flex-direction: column; gap: 16px; padding-bottom: 80px; }
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: all var(--transition);
+}
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-1px);
+}
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px 0;
+}
+.card-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-bg);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.card-class-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: #f0eeec;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.card-time {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+.card-body {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 20px;
+  padding: 14px 20px 20px;
+}
+@media (max-width: 700px) { .card-body { grid-template-columns: 1fr; } }
+.card-video video {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  background: #1a1a2e;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+.card-meta { display: flex; flex-direction: column; gap: 10px; }
+.card-meta h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-author {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+.card-author strong { color: var(--text); }
+.note-box {
+  background: #faf8f5;
+  border-left: 3px solid var(--accent-light);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+.note-box .note-label {
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: var(--accent);
+  margin-bottom: 3px;
+  display: block;
+}
+
+/* Review Section */
+.review-section {
+  margin-top: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.review-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  overflow: hidden;
+}
+.review-tab {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 0.76rem;
+  background: #fafaf8;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all var(--transition);
+  text-align: center;
+  border-right: 1px solid var(--border-strong);
+}
+.review-tab:last-child { border-right: none; }
+.review-tab:hover { background: var(--accent-bg); }
+.review-tab.active { background: var(--accent); color: #fff; }
+.review-content textarea {
+  width: 100%;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+  font-family: inherit;
+  transition: all var(--transition);
+  background: #fafaf8;
+}
+.review-content textarea:focus { border-color: var(--accent); background: #fff; }
+.review-content input[type="file"] { font-size: 0.82rem; margin-top: 4px; }
+.review-media { margin-top: 8px; }
+.review-media video, .review-media img {
+  max-width: 200px;
+  max-height: 140px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.card-actions { display: flex; gap: 8px; margin-top: 12px; align-items: center; }
+
+/* Badge done */
+.badge-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--success-bg);
+  color: var(--success);
+  font-size: 0.7rem;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 70px 20px;
+  color: var(--text-muted);
+}
+.empty-state .icon { font-size: 2.5rem; margin-bottom: 14px; opacity: 0.5; }
+.empty-state .title { font-size: 1rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+.empty-state .desc { font-size: 0.85rem; }
+
+/* Animation */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card { animation: fadeInUp 0.35s ease backwards; }
+.card:nth-child(1) { animation-delay: 0s; }
+.card:nth-child(2) { animation-delay: 0.04s; }
+.card:nth-child(3) { animation-delay: 0.08s; }
+.card:nth-child(4) { animation-delay: 0.12s; }
+.card:nth-child(5) { animation-delay: 0.16s; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="site-header">
+  <div style="display:flex;align-items:center;">
+    <img src="logo.jpg" alt="Logo" class="logo">
+    <span class="brand">片刻点评</span>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="subtitle">Short Video Review</div>
+    <div class="tagline"><strong>把每一份创意，</strong><br>认真地看完。</div>
+  </div>
+
+  <button class="upload-toggle hero-upload" id="uploadToggle">＋ 上传新视频</button>
+
+  <div class="stats-panel">
+    <div class="stat-item">
+      <div class="stat-number" id="statPending">0</div>
+      <div class="stat-label">待完成作品</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number" id="statClasses">0</div>
+      <div class="stat-label">涉及班级</div>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <!-- Section Header -->
+  <div class="section-header">
+    <div class="section-tag">Inbox</div>
+    <h2>待点评作品</h2>
+    <p class="section-desc">只显示尚未完成的内容</p>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-group">
+      <span class="toolbar-label">显示</span>
+      <select id="filterSelect">
+        <option value="incomplete">未点评</option>
+        <option value="complete">已完成</option>
+        <option value="all">全部</option>
+      </select>
+    </div>
+    <div class="toolbar-group" style="margin-left:auto;">
+      <span class="toolbar-label">排序</span>
+      <select id="sortSelect">
+        <option value="time">提交顺序</option>
+        <option value="class">班级</option>
+        <option value="author">作者</option>
+        <option value="title">作品名称</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Upload Modal -->
+  <div class="modal-overlay" id="uploadModal" role="dialog" aria-modal="true" aria-labelledby="uploadModalTitle">
+  <div class="upload-form" id="uploadForm">
+    <div class="modal-header">
+      <h3 id="uploadModalTitle">上传新作品</h3>
+      <button class="modal-close" id="uploadClose" type="button" aria-label="关闭">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>短视频文件</label>
+        <input type="file" id="inputVideo" accept="video/*">
+      </div>
+      <div class="form-group">
+        <label>作品名称</label>
+        <input type="text" id="inputTitle" placeholder="自动从文件名填充，可修改">
+      </div>
+      <div class="form-group">
+        <label>作者</label>
+        <input type="text" id="inputAuthor" placeholder="输入作者姓名">
+      </div>
+      <div class="form-group">
+        <label>班级</label>
+        <select id="inputClass">
+          <option value="">请选择班级</option>
+          <option value="1班">1班</option>
+          <option value="2班">2班</option>
+          <option value="3班">3班</option>
+          <option value="4班">4班</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>助教备注</label>
+        <textarea id="inputNote" placeholder="可选"></textarea>
+      </div>
+    </div>
+    <div class="submit-row">
+      <button class="btn btn-primary" id="submitBtn">提交作品</button>
+    </div>
+  </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="cards" id="cardsList"></div>
+</div>
+
+<script>
+// ===== IndexedDB =====
+const DB_NAME = 'PianKeDB';
+const DB_VERSION = 1;
+const STORE_META = 'entries';
+const STORE_BLOBS = 'blobs';
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_META)) db.createObjectStore(STORE_META, { keyPath: 'id' });
+      if (!db.objectStoreNames.contains(STORE_BLOBS)) db.createObjectStore(STORE_BLOBS, { keyPath: 'id' });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function getAllEntries() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_META, 'readonly');
+    const req = tx.objectStore(STORE_META).getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function saveEntry(entry) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_META, 'readwrite');
+    tx.objectStore(STORE_META).put(entry);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function saveBlob(id, blob) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_BLOBS, 'readwrite');
+    tx.objectStore(STORE_BLOBS).put({ id, blob });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function getBlob(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_BLOBS, 'readonly');
+    const req = tx.objectStore(STORE_BLOBS).get(id);
+    req.onsuccess = () => resolve(req.result ? req.result.blob : null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// ===== State =====
+let entries = [];
+let currentFilter = 'incomplete';
+let currentSort = 'time';
+const blobURLCache = {};
+
+// ===== DOM =====
+const uploadToggle = document.getElementById('uploadToggle');
+const uploadForm = document.getElementById('uploadForm');
+const uploadModal = document.getElementById('uploadModal');
+const uploadClose = document.getElementById('uploadClose');
+const inputVideo = document.getElementById('inputVideo');
+const inputTitle = document.getElementById('inputTitle');
+const inputAuthor = document.getElementById('inputAuthor');
+const inputClass = document.getElementById('inputClass');
+const inputNote = document.getElementById('inputNote');
+const submitBtn = document.getElementById('submitBtn');
+const cardsList = document.getElementById('cardsList');
+const sortSelect = document.getElementById('sortSelect');
+const filterSelect = document.getElementById('filterSelect');
+
+// Toggle upload modal
+function closeUploadModal() {
+  uploadModal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+uploadToggle.addEventListener('click', () => {
+  uploadModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+});
+uploadClose.addEventListener('click', closeUploadModal);
+uploadModal.addEventListener('click', event => {
+  if (event.target === uploadModal) closeUploadModal();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && uploadModal.classList.contains('open')) closeUploadModal();
+});
+
+// Auto-fill title from filename
+inputVideo.addEventListener('change', () => {
+  if (inputVideo.files.length > 0) {
+    const name = inputVideo.files[0].name.replace(/\.[^.]+$/, '');
+    if (!inputTitle.value.trim()) inputTitle.value = name;
+  }
+});
+
+// Submit
+submitBtn.addEventListener('click', async () => {
+  if (!inputVideo.files.length) { alert('请上传视频文件'); return; }
+  if (!inputTitle.value.trim()) { alert('请输入作品名称'); return; }
+
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const videoFile = inputVideo.files[0];
+
+  const entry = {
+    id,
+    title: inputTitle.value.trim(),
+    author: inputAuthor.value.trim(),
+    className: inputClass.value.trim(),
+    note: inputNote.value.trim(),
+    videoBlobId: 'video_' + id,
+    reviewText: '',
+    reviewBlobId: null,
+    reviewBlobType: null,
+    done: false,
+    createdAt: Date.now()
+  };
+
+  await saveBlob(entry.videoBlobId, videoFile);
+  await saveEntry(entry);
+  entries.push(entry);
+
+  inputVideo.value = '';
+  inputTitle.value = '';
+  inputAuthor.value = '';
+  inputClass.value = '';
+  inputNote.value = '';
+  closeUploadModal();
+
+  render();
+});
+
+// Filter
+filterSelect.addEventListener('change', () => {
+  currentFilter = filterSelect.value;
+  updateSectionHeader();
+  render();
+});
+
+// Sort
+sortSelect.addEventListener('change', () => {
+  currentSort = sortSelect.value;
+  render();
+});
+
+function updateSectionHeader() {
+  const h2 = document.querySelector('.section-header h2');
+  const desc = document.querySelector('.section-header .section-desc');
+  const tag = document.querySelector('.section-header .section-tag');
+  if (currentFilter === 'incomplete') {
+    tag.textContent = 'Inbox';
+    h2.textContent = '待点评作品';
+    desc.textContent = '只显示尚未完成的内容';
+  } else if (currentFilter === 'complete') {
+    tag.textContent = 'Archive';
+    h2.textContent = '已完成作品';
+    desc.textContent = '已完成点评的内容';
+  } else {
+    tag.textContent = 'All';
+    h2.textContent = '全部作品';
+    desc.textContent = '显示所有内容';
+  }
+}
+
+// ===== Render =====
+async function getBlobURL(blobId) {
+  if (blobURLCache[blobId]) return blobURLCache[blobId];
+  const blob = await getBlob(blobId);
+  if (!blob) return null;
+  const url = URL.createObjectURL(blob);
+  blobURLCache[blobId] = url;
+  return url;
+}
+
+function getFiltered() {
+  let list = [...entries];
+  if (currentFilter === 'incomplete') list = list.filter(e => !e.done);
+  else if (currentFilter === 'complete') list = list.filter(e => e.done);
+
+  if (currentSort === 'class') list.sort((a, b) => a.className.localeCompare(b.className, 'zh'));
+  else if (currentSort === 'author') list.sort((a, b) => a.author.localeCompare(b.author, 'zh'));
+  else if (currentSort === 'title') list.sort((a, b) => a.title.localeCompare(b.title, 'zh'));
+  else list.sort((a, b) => a.createdAt - b.createdAt);
+
+  return list;
+}
+
+function updateStats() {
+  const pending = entries.filter(e => !e.done);
+  document.getElementById('statPending').textContent = pending.length;
+  const classes = new Set(pending.map(e => e.className).filter(Boolean));
+  document.getElementById('statClasses').textContent = classes.size;
+}
+
+function formatTime(ts) {
+  const d = new Date(ts);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const min = String(d.getMinutes()).padStart(2, '0');
+  return `${mm}/${dd} ${hh}:${min} 提交`;
+}
+
+async function render() {
+  updateStats();
+  const list = getFiltered();
+
+  if (list.length === 0) {
+    const msgs = {
+      incomplete: '所有作品已点评完成 🎉',
+      complete: '暂无已完成的点评',
+      all: '暂无作品，点击上方上传'
+    };
+    cardsList.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📋</div>
+        <div class="title">${msgs[currentFilter]}</div>
+        <div class="desc">上传短视频开始使用</div>
+      </div>`;
+    return;
+  }
+
+  let html = '';
+  let idx = 0;
+  for (const entry of list) {
+    idx++;
+    const videoURL = await getBlobURL(entry.videoBlobId);
+    let reviewMediaHTML = '';
+    if (entry.reviewBlobId) {
+      const rURL = await getBlobURL(entry.reviewBlobId);
+      if (rURL) {
+        if (entry.reviewBlobType === 'video') {
+          reviewMediaHTML = `<div class="review-media"><video src="${rURL}" controls></video></div>`;
+        } else {
+          reviewMediaHTML = `<div class="review-media"><img src="${rURL}"></div>`;
+        }
+      }
+    }
+
+    const numStr = String(idx).padStart(2, '0');
+
+    html += `
+    <div class="card" data-id="${entry.id}">
+      <div class="card-top">
+        <span class="card-badge">#${numStr}</span>
+        ${entry.className ? `<span class="card-class-badge">${esc(entry.className)}</span>` : ''}
+        <span class="card-time">${formatTime(entry.createdAt)}</span>
+        ${entry.done ? '<span class="badge-done">✓ 已完成</span>' : ''}
+      </div>
+      <div class="card-body">
+        <div class="card-video">
+          ${videoURL ? `<video src="${videoURL}" controls preload="metadata"></video>` : '<div style="padding:30px;text-align:center;color:#bbb;background:#f3f2f0;border-radius:10px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;">视频加载中…</div>'}
+        </div>
+        <div class="card-meta">
+          <h3>${esc(entry.title)}</h3>
+          <div class="card-author">作者 / <strong>${esc(entry.author) || '—'}</strong></div>
+          ${entry.note ? `<div class="note-box"><span class="note-label">助教备注</span>${esc(entry.note)}</div>` : `<div class="note-box"><span class="note-label">助教备注</span>暂无备注</div>`}
+
+          <div class="review-section">
+            <div class="review-tabs">
+              <div class="review-tab active" data-rtab="text" data-id="${entry.id}">文字点评</div>
+              <div class="review-tab" data-rtab="video" data-id="${entry.id}">视频点评</div>
+            </div>
+            <div class="review-content" id="rc_${entry.id}">
+              <textarea placeholder="输入老师点评…" data-review-text="${entry.id}">${esc(entry.reviewText)}</textarea>
+            </div>
+            ${reviewMediaHTML}
+          </div>
+
+          <div class="card-actions">
+            <button class="btn btn-primary btn-sm btn-save-review" data-id="${entry.id}">保存点评</button>
+            ${entry.done
+              ? `<button class="btn btn-outline btn-sm btn-undo" data-id="${entry.id}">撤销完成</button>`
+              : `<button class="btn btn-success btn-sm btn-done" data-id="${entry.id}">✓ 标记完成</button>`
+            }
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+  cardsList.innerHTML = html;
+  bindCardEvents();
+}
+
+function esc(s) { if (!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function bindCardEvents() {
+  document.querySelectorAll('.review-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      const id = this.dataset.id;
+      const type = this.dataset.rtab;
+      this.parentElement.querySelectorAll('.review-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const rc = document.getElementById('rc_' + id);
+      const entry = entries.find(e => e.id === id);
+      if (type === 'text') {
+        rc.innerHTML = `<textarea placeholder="输入老师点评…" data-review-text="${id}">${esc(entry.reviewText)}</textarea>`;
+      } else {
+        rc.innerHTML = `<input type="file" accept="video/*" data-review-file="${id}" data-review-type="video">`;
+      }
+    });
+  });
+
+  document.querySelectorAll('.btn-save-review').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const id = this.dataset.id;
+      const entry = entries.find(e => e.id === id);
+      const ta = document.querySelector(`[data-review-text="${id}"]`);
+      if (ta) entry.reviewText = ta.value;
+      const fi = document.querySelector(`[data-review-file="${id}"]`);
+      if (fi && fi.files.length > 0) {
+        const blobId = 'review_' + id;
+        await saveBlob(blobId, fi.files[0]);
+        entry.reviewBlobId = blobId;
+        entry.reviewBlobType = fi.dataset.reviewType;
+        if (blobURLCache[blobId]) { URL.revokeObjectURL(blobURLCache[blobId]); delete blobURLCache[blobId]; }
+      }
+      await saveEntry(entry);
+      await render();
+    });
+  });
+
+  document.querySelectorAll('.btn-done').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const id = this.dataset.id;
+      const entry = entries.find(e => e.id === id);
+      entry.done = true;
+      await saveEntry(entry);
+      render();
+    });
+  });
+
+  document.querySelectorAll('.btn-undo').forEach(btn => {
+    btn.addEventListener('click', async function() {
+      const id = this.dataset.id;
+      const entry = entries.find(e => e.id === id);
+      entry.done = false;
+      await saveEntry(entry);
+      render();
+    });
+  });
+}
+
+// ===== Init =====
+(async function init() {
+  entries = await getAllEntries();
+  render();
+})();
+</script>
+</body>
+</html>
